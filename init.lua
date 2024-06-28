@@ -90,6 +90,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- NOTE: JTK - Adding Powershell as the terminal emulator.
+vim.opt.shell = '"C:\\Program Files\\PowerShell\\7\\pwsh.exe"'
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
@@ -846,20 +848,22 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- NOTE: JTK comment out the code in this section to remove mini.statusline.
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      -- local statusline = require 'mini.statusline' -- NOTE: JTK - Put this back for re-enabling mini.statusline.
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- statusline.setup { use_icons = vim.g.have_nerd_font } -- NOTE: JTK - Put this back for re-enabling mini.statusline.
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- statusline.section_location = function() -- NOTE: JTK - Put this back for re-enabling mini.statusline.
+      --   return '%2l:%-2v' -- NOTE: JTK - Put this back for re-enabling mini.statusline.
+      -- end -- NOTE: JTK - Put this back for re-enabling mini.statusline.
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -895,6 +899,38 @@ require('lazy').setup({
       --   If not available, we use `mini` as the fallback
       'rcarriga/nvim-notify',
     },
+  },
+  -- TODO: JTK - Load and configure lualine here.
+  {
+    'nvim-lualine/lualine.nvim',
+    config = function()
+      require('lualine').setup {
+        options = {
+          icons_enabled = true,
+          component_separators = '|',
+          section_separators = '',
+        },
+        sections = {
+          lualine_x = {
+            {
+              require('noice').api.statusline.mode.get,
+              cond = require('noice').api.statusline.mode.has,
+              color = { fg = '#ff9e64' },
+            },
+            {
+              require('noice').api.status.command.get,
+              cond = require('noice').api.status.command.has,
+              color = { fg = '#ff9e64' },
+            },
+          },
+          lualine_a = {
+            {
+              'buffers',
+            },
+          },
+        },
+      }
+    end,
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',

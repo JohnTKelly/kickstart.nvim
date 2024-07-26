@@ -1001,9 +1001,9 @@ require('lazy').setup({
     keys = {
       { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
     },
-    -- {
-    --   'tpope/vim-fugitive',
-    -- },
+  },
+  {
+    'tpope/vim-fugitive',
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the

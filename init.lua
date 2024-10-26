@@ -1056,14 +1056,20 @@ require('lazy').setup({
     opts = {
       workspaces = {
         {
+          name = 'work',
+          path = '~/OneDrive - Microsoft/Obsidian/JTK Work Vault',
+        },
+        {
           name = 'personal',
           path = '~/OneDrive/Documents/Obsidian Vault',
         },
-        --{
-        --name = 'work',
-        --path = '~/vaults/work',
-        --},
       },
+      notes_subdir = '0 - INBOX',
+
+      -- Where to put new notes. Valid options are
+      --  * "current_dir" - put new notes in same directory as the current buffer.
+      --  * "notes_subdir" - put new notes in the default notes subdirectory.
+      new_notes_location = 'current_dir',
       picker = {
         -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
         name = 'telescope.nvim',

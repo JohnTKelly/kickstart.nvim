@@ -1108,6 +1108,23 @@ require('lazy').setup({
       },
       -- see below for full list of options 👇
     },
+    config = function(_, opts)
+      require('obsidian').setup(opts)
+      local ok, _ = pcall(require, 'which-key')
+      if not ok then
+        print 'require which-key failed.'
+      end
+      require('which-key').register({
+        o = {
+          name = 'obsidian',
+          w = { '<cmd>ObsidianWorkspace<CR>', 'ObsidianWorkspace - Select an Obsidian workspace.' },
+          n = { '<cmd>ObsidianNew<CR>', 'ObsidianNew - Create a new Obsidian note.' },
+          s = { '<cmd>ObsidianSearch<CR>', 'ObsidianSearch - Search for an Obsidian note.' },
+          -- [other mappings]
+          x = { '<cmd>echo "Test worked"<CR>', 'echo "Test worked"' },
+        },
+      }, { prefix = '<leader>', buffer = false })
+    end,
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the

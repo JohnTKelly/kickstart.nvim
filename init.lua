@@ -1120,6 +1120,9 @@ require('lazy').setup({
           w = { '<cmd>ObsidianWorkspace<CR>', 'ObsidianWorkspace - Select an Obsidian workspace.' },
           n = { '<cmd>ObsidianNew<CR>', 'ObsidianNew - Create a new Obsidian note.' },
           s = { '<cmd>ObsidianSearch<CR>', 'ObsidianSearch - Search for an Obsidian note.' },
+          q = { '<cmd>ObsidianQuickSwitch<CR>', 'ObsidianQuickSwitch - Switch to (open) Obsidian note.' },
+          e = { '<cmd>ObsidianExtractNote<CR>', 'ObsidianExtractNote - Extract the visually selected text into a new note and link to it.' },
+          t = { '<cmd>ObsidianTOC<CR>', 'ObsidianTOC - Load the table of contents of the current note into a picker list.' },
           -- [other mappings]
           x = { '<cmd>echo "Test worked"<CR>', 'echo "Test worked"' },
         },

@@ -1114,19 +1114,41 @@ require('lazy').setup({
       if not ok then
         print 'require which-key failed.'
       end
-      require('which-key').register({
-        o = {
-          name = 'obsidian',
-          w = { '<cmd>ObsidianWorkspace<CR>', 'ObsidianWorkspace - Select an Obsidian workspace.' },
-          n = { '<cmd>ObsidianNew<CR>', 'ObsidianNew - Create a new Obsidian note.' },
-          s = { '<cmd>ObsidianSearch<CR>', 'ObsidianSearch - Search for an Obsidian note.' },
-          q = { '<cmd>ObsidianQuickSwitch<CR>', 'ObsidianQuickSwitch - Switch to (open) Obsidian note.' },
-          e = { '<cmd>ObsidianExtractNote<CR>', 'ObsidianExtractNote - Extract the visually selected text into a new note and link to it.' },
-          t = { '<cmd>ObsidianTOC<CR>', 'ObsidianTOC - Load the table of contents of the current note into a picker list.' },
-          -- [other mappings]
-          x = { '<cmd>echo "Test worked"<CR>', 'echo "Test worked"' },
+      require('which-key').add {
+        { '<leader>o', buffer = false, group = 'Obsidian' },
+        {
+          '<leader>oe',
+          '<cmd>ObsidianExtractNote<CR>',
+          buffer = false,
+          desc = 'ObsidianExtractNote - Extract the visually selected text into a new note and link to it.',
         },
-      }, { prefix = '<leader>', buffer = false })
+        {
+          '<leader>on',
+          '<cmd>ObsidianNew<CR>',
+          buffer = false,
+          desc = 'ObsidianNew - Create a new note. This command has one optional argument: the title of the new note.',
+        },
+        {
+          '<leader>oo',
+          '<cmd>ObsidianOpen<CR>',
+          buffer = false,
+          desc = 'ObsidianOpen - Open a note in the Obsidian app. This command has one optional argument: a query used to resolve the note to open by ID, path, or alias.',
+        },
+        {
+          '<leader>oq',
+          '<cmd>ObsidianQuickSwitch<CR>',
+          buffer = false,
+          desc = 'ObsidianQuickSwitch - Quickly switch to (or open) another note in your vault, searching by its name using ripgrep with your preferred picker.',
+        },
+        {
+          '<leader>os',
+          '<cmd>ObsidianSearch<CR>',
+          buffer = false,
+          desc = 'ObsidianSearch - Search for (or create) notes in your vault using ripgrep with your preferred picker.',
+        },
+        { '<leader>ot', '<cmd>ObsidianTOC<CR>', buffer = false, desc = 'ObsidianTOC - Load the table of contents of the current note into a picker list.' },
+        { '<leader>ow', '<cmd>ObsidianWorkspace<CR>', buffer = false, desc = 'ObsidianWorkspace - Switch to another workspace.' },
+      }
     end,
   },
 

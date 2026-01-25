@@ -77,3 +77,27 @@ vim.opt.hlsearch = true
 -- vim.api.nvim_set_var('shellreir', '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode')
 -- vim.api.nvim_set_var('shellpipe', '2>&1 | %%{ "$_" } | tee %s; exit $LastExitCode')
 -- vim.api.nvim_set_var('shellquote', 'shellxquote')
+--
+
+-- Store original shell settings for restoration if needed
+-- local original_shell = vim.o.shell
+-- local original_shellcmdflag = vim.o.shellcmdflag
+
+-- Configure PowerShell as terminal emulator
+-- vim.opt.shell = 'pwsh'
+-- vim.opt.shellcmdflag = '-nologo -noprofile -ExecutionPolicy RemoteSigned -command'
+
+-- Set shell redirection and piping for PowerShell
+-- vim.api.nvim_set_var('shellredir', '2>&1 | %%{ "$_" } | Out-File %s; exit $LastExitCode')
+-- vim.api.nvim_set_var('shellpipe', '2>&1 | %%{ "$_" } | tee %s; exit $LastExitCode')
+-- vim.api.nvim_set_var('shellquote', '')
+
+-- Set PowerShell as the default shell
+vim.opt.shell = 'pwsh'
+vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command'
+vim.opt.shellquote = ''
+vim.opt.shellxquote = ''
+
+-- Simplified redirection and piping
+vim.opt.shellredir = '| Out-File -Encoding UTF8 %s; exit $LastExitCode'
+vim.opt.shellpipe = '| Out-File -Encoding UTF8 %s; exit $LastExitCode'

@@ -112,6 +112,31 @@ return {
     -- TODO: Remove once fixed upstream. See: https://github.com/obsidian-nvim/obsidian.nvim/issues/XXX
     -- Original source: lua/obsidian/actions.lua, M.extract_note (~line 424)
     local actions = require 'obsidian.actions'
+    local obs_api = require 'obsidian.api'
+
+    -- WORKAROUND: toggle_checkbox skips blank lines even when create_new is enabled.
+    -- Both actions.toggle_checkbox and the toggle_checkbox command guard with
+    -- `current_line:match "%S"`, which filters out blank/whitespace-only lines before
+    -- _toggle_checkbox (which already handles them via create_new) is ever called.
+    -- TODO: Remove once fixed upstream.
+    local original_toggle = actions._toggle_checkbox
+    actions.toggle_checkbox = function(start_lnum, end_lnum)
+      local viz = obs_api.get_visual_selection { strict = true }
+      local states = Obsidian.opts.checkbox.order
+      if viz then
+        start_lnum, end_lnum = viz.csrow, viz.cerow
+      else
+        local row = unpack(vim.api.nvim_win_get_cursor(0))
+        start_lnum, end_lnum = row, row
+      end
+      for line_nb = start_lnum, end_lnum do
+        local current_line = vim.api.nvim_buf_get_lines(0, line_nb - 1, line_nb, false)[1]
+        if current_line and (current_line:match '%S' or Obsidian.opts.checkbox.create_new) then
+          original_toggle(states, line_nb)
+        end
+      end
+    end
+
     actions.extract_note = function(label)
       local obs_api = require 'obsidian.api'
       local obs_log = require 'obsidian.log'

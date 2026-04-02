@@ -1,6 +1,7 @@
 return {
   'obsidian-nvim/obsidian.nvim',
-  version = '*', -- recommended, use latest release instead of latest commit
+  -- TODO: switch back to version = '*' after next release includes our fixes
+  branch = 'main',
   lazy = false,
   ft = 'markdown',
   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
@@ -104,105 +105,6 @@ return {
   },
   config = function(_, opts)
     require('obsidian').setup(opts)
-
-    -- WORKAROUND: extract_note doesn't apply note.template (upstream bug).
-    -- The `new` action in actions.lua passes `template = Obsidian.opts.note.template` to
-    -- Note.create (line ~474), but `extract_note` (line ~446) does not.
-    -- This replaces extract_note with an identical implementation that adds the template.
-    -- TODO: Remove once fixed upstream. See: https://github.com/obsidian-nvim/obsidian.nvim/issues/XXX
-    -- Original source: lua/obsidian/actions.lua, M.extract_note (~line 424)
-    local actions = require 'obsidian.actions'
-    local obs_api = require 'obsidian.api'
-
-    -- WORKAROUND: toggle_checkbox skips blank lines even when create_new is enabled.
-    -- Both actions.toggle_checkbox and the toggle_checkbox command guard with
-    -- `current_line:match "%S"`, which filters out blank/whitespace-only lines before
-    -- _toggle_checkbox (which already handles them via create_new) is ever called.
-    -- TODO: Remove once fixed upstream.
-    local original_toggle = actions._toggle_checkbox
-    actions.toggle_checkbox = function(start_lnum, end_lnum)
-      local viz = obs_api.get_visual_selection { strict = true }
-      local states = Obsidian.opts.checkbox.order
-      if viz then
-        start_lnum, end_lnum = viz.csrow, viz.cerow
-      else
-        local row = unpack(vim.api.nvim_win_get_cursor(0))
-        start_lnum, end_lnum = row, row
-      end
-      for line_nb = start_lnum, end_lnum do
-        local current_line = vim.api.nvim_buf_get_lines(0, line_nb - 1, line_nb, false)[1]
-        if current_line and (current_line:match '%S' or Obsidian.opts.checkbox.create_new) then
-          original_toggle(states, line_nb)
-        end
-      end
-    end
-
-    actions.extract_note = function(label)
-      local obs_api = require 'obsidian.api'
-      local obs_log = require 'obsidian.log'
-      local Note = require 'obsidian.note'
-
-      local viz = obs_api.get_visual_selection()
-      if not viz then
-        obs_log.err '`Obsidian extract_note` must be called in visual mode'
-        return
-      end
-
-      local content = vim.split(viz.selection, '\n', { plain = true })
-
-      if label ~= nil and string.len(label) > 0 then
-        label = vim.trim(label)
-      else
-        label = obs_api.input 'Enter title (optional): '
-        if not label then
-          obs_log.warn 'Aborted'
-          return
-        elseif label == '' then
-          label = nil
-        end
-      end
-
-      -- FIX: pass template and should_write (missing from upstream extract_note)
-      local note = Note.create {
-        id = label,
-        template = Obsidian.opts.note.template,
-        should_write = true,
-      }
-
-      -- Replace selection with link to new note.
-      -- Uses nvim_buf_set_text instead of the upstream's local replace_selection()
-      -- which relies on vim.lsp.util.apply_workspace_edit (inaccessible from here).
-      local link = note:format_link()
-      local bufnr = vim.api.nvim_get_current_buf()
-      -- Convert viz.cecol (1-indexed inclusive) to 0-indexed exclusive end column,
-      -- accounting for multi-byte UTF-8 characters.
-      local end_line = vim.api.nvim_buf_get_lines(bufnr, viz.cerow - 1, viz.cerow, false)[1]
-      local end_col = viz.cecol
-      if end_line and end_col <= #end_line then
-        local byte = end_line:byte(end_col)
-        if byte then
-          local char_bytes = 1
-          if byte >= 240 then
-            char_bytes = 4
-          elseif byte >= 224 then
-            char_bytes = 3
-          elseif byte >= 192 then
-            char_bytes = 2
-          end
-          end_col = end_col - 1 + char_bytes
-        end
-      else
-        end_col = #(end_line or '')
-      end
-      vim.api.nvim_buf_set_text(bufnr, viz.csrow - 1, viz.cscol - 1, viz.cerow - 1, end_col, { link })
-
-      -- Save file so backlinks search (ripgrep) can find the new link
-      vim.cmd 'silent! write'
-
-      -- Open new note and append extracted content after the template
-      note:open { sync = true }
-      vim.api.nvim_buf_set_lines(0, -1, -1, false, content)
-    end
 
     local ok, _ = pcall(require, 'which-key')
     if not ok then

@@ -2,6 +2,9 @@ return {
   'obsidian-nvim/obsidian.nvim',
   -- TODO: switch back to version = '*' after next release includes our fixes
   branch = 'main',
+  -- Only load when at least one workspace directory exists (skip on headless/server machines)
+  enabled = vim.fn.isdirectory(vim.fn.expand '~/OneDrive - Microsoft/Obsidian/JTK Work Vault') == 1
+    or vim.fn.isdirectory(vim.fn.expand '~/OneDrive/Documents/Obsidian Vault') == 1,
   lazy = false,
   ft = 'markdown',
   -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:

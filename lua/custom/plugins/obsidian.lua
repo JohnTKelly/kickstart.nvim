@@ -104,6 +104,10 @@ return {
       date_format = 'YYYYMMDD-[daily-note]',
       alias_format = '[Daily Note]',
     },
+    -- Disable obsidian.nvim's built-in UI rendering since render-markdown.nvim
+    -- handles markdown rendering for us. Recommended by render-markdown's
+    -- :checkhealth output to avoid the two plugins fighting over the buffer.
+    ui = { enable = false },
     -- see below for full list of options 👇
   },
   config = function(_, opts)
